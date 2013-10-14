@@ -1,0 +1,8 @@
+-Output prompt with index
+-Add commands:
+    add source
+    source?
+    add tag
+    tags?
+    remove tag
+-$CHARACTER mode
