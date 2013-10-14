@@ -64,12 +64,11 @@ class Bot(irc.IRCClient):
         elif msg.startswith("tags"):
             msg = self.promptbot.listAllCategories()
             return (target, msg)
-        elif "add tags" in msg:
-            if msg.split()[0] == "":
-            else:
-                
+        #elif "add tags" in msg:
+            #if msg.split()[0] == "":
+            #else:
         #source commands
-        elif 
+        #elif 
         else: 
             msg = "Eh? Try asking me for a prompt."
             return (channel, msg)
