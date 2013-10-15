@@ -1,8 +1,5 @@
--Output prompt with index
+-Change serialization
 -Add commands:
-    add source
-    source?
-    add tag
-    tags?
     remove tag
+-Unicode
 -$CHARACTER mode

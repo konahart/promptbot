@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
-from random import choice
+from random import shuffle
 import time, sys, re
 import promptbot
 
@@ -26,9 +26,12 @@ class Bot(irc.IRCClient):
         if msg.startswith(self.nickname):
             pattern = self.nickname + "\W( )?"
             msg = re.sub(pattern, '', msg)
-            #check for command
-            target, msg = self.commands(msg, user, channel)
-            self.msg(target, msg)
+            if "help" in msg:
+                self.helpMenu(msg, user, channel)
+            else:
+                #check for command
+                target, msg = self.commands(msg, user, channel)
+                self.msg(target, msg)
 
     def commands(self, msg, user, target):
         #prompt commands
@@ -38,7 +41,7 @@ class Bot(irc.IRCClient):
             self.promptbot.addPrompt(msg)
             msg = "Prompt added."
             return (target, msg) 
-        elif msg.startswith("last prompt"):
+        elif msg.startswith("last"):
             msg = self.promptbot.last()
             return (target, msg)
         elif msg.startswith("backup prompts"):
@@ -46,32 +49,66 @@ class Bot(irc.IRCClient):
             msg = "%d prompts backed up." % (len(self.promptbot.prompts))
             target = user
             return (target, msg)
-        elif "prompt" in msg:
-            tags = re.findall("#\((.*)\)#", msg)
-            tags.extend(re.findall("#([^\(\s]*)", msg))
-            if tags:
-                i = 0
-                msg = "None."
-                while msg == "None." and i < len(tags):
-                    msg = "%s: %s" % (user, self.promptbot.promptByTag(tags[i]))
-                    i += 1
-                if msg == "None.":
-                    msg = "Not able to find any matching prompts."
-            else:
-                msg = "%s: %s" % (user, self.promptbot.randomPrompt())
+        index = re.findall('[0-9]+', msg)
+        if index:
+            msg = "%s: %s" % (user, self.promptbot.promptByIndex(int(index[0])))
             return (target, msg)
+        tags = re.findall("#\((.+)\)", msg)
+        tags.extend(re.findall("#([^\(\s]+)", msg))
+        if tags:
+            i = 0
+            prompt = "None."
+            shuffle(tags)
+            while prompt == "None." and i < len(tags):
+                prompt = self.promptbot.promptByTag(tags[i])
+                i += 1
+            if prompt == "None.":
+                msg = "Not able to find any matching prompts."
+            else:
+                msg = "%s: %s" % (user, prompt)
+            return (target, msg)
+        elif "prompt" in msg:
+            msg = "%s: %s" % (user, self.promptbot.randomPrompt())
+            return (target, msg)
+        elif msg.startswith("index?"):
+            return (target, self.promptbot.getIndex()) 
         #tag commands
+        elif msg.startswith("tags?"):
+            return (target, self.promptbot.getTags()) 
         elif msg.startswith("tags"):
             msg = self.promptbot.listAllCategories()
             return (target, msg)
-        #elif "add tags" in msg:
-            #if msg.split()[0] == "":
-            #else:
+        elif msg.startswith("add tag"):
+            tags = re.findall("#\((.+)\)", msg)
+            tags.extend(re.findall("#([^\(\s]+)", msg))
+            if tags:
+                self.promptbot.addTags(tags)
+                return (target, "Tags added.")
+            else:
+                return (target, "No tags found. Try 'add tag(s) #tag or #(tag)'.")
         #source commands
-        #elif 
+        elif msg.startswith("source?"):
+            return (target, self.promptbot.getSource()) 
+        elif msg.startswith("add source"):
+            source = re.findall("@\((.+)\)", msg)
+            if source:
+                self.promptbot.addSource(source)
+                return (target, "Source added.")
+            else:
+                return (target, "No source found. Try 'add source @(source)'.")
         else: 
             msg = "Eh? Try asking me for a prompt."
-            return (channel, msg)
+            return (target, msg)
+
+    def helpMenu(self, msg, user, channel):
+        if "help prompts" in msg:
+            self.msg(channel, "'#(tag)' for a prompt with that tag. Multiple tags will give a prompt with a tag randomly selected from those provided.\n\t'promptbot, I want a prompt from #worldbuilding or #theme' or 'promptbot, #worldbuilding #theme'\nUsing a number when talking to promptbot will return the prompt with that index. The last prompt's index can be retrieved with 'index?'\nFor a random prompt, just use the word 'prompt'\n\t'promptbot, gimme a prompt' or 'promptbot, prompt'\n'last' will reprint the last prompt.")
+        elif "help tags" in msg:
+            self.msg(channel, "'tags?' will give the list of tags for the last given prompt.\n'add tag(s) #tag #(tag with spaces)' will add those tags to the last given prompt.")
+        elif "help sources" in msg:
+            self.msg(channel, "'source?' will give the source for the last given prompt.\n'add source @(source)' will add that source to the last given prompt.")
+        else:
+            self.msg(channel,"Help topics include: 'prompts', 'tags', 'sources' \nType 'help $TOPIC' for more info.")
 
 class BotFactory(protocol.ClientFactory):
     def __init__(self, channel, filename):
