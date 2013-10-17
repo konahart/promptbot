@@ -2,4 +2,9 @@
 -Add commands:
     remove tag
 -Unicode
--$CHARACTER mode
+
+Ideas:
+-$CHARACTER/Mad Lib mode
+-NaNo reminder
+-Theme Thursdays topic set
+-praise

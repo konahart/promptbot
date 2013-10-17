@@ -23,18 +23,47 @@ class Bot(irc.IRCClient):
 
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
-        if msg.startswith(self.nickname):
+        if channel == self.nickname:
+            channel = user
+        if msg.startswith(self.nickname) or channel == user:
             pattern = self.nickname + "\W( )?"
             msg = re.sub(pattern, '', msg)
             if "help" in msg:
                 self.helpMenu(msg, user, channel)
+            elif msg == "github":
+                msg = "%s: %s" % (user, "https://github.com/konayashi/promptbot")
+                self.msg(channel, msg)
             else:
                 #check for command
                 target, msg = self.commands(msg, user, channel)
                 self.msg(target, msg)
 
     def commands(self, msg, user, target):
-        #prompt commands
+        #tag commands
+        if msg.startswith("tags?"):
+            return (target, self.promptbot.getTags()) 
+        elif msg.startswith("tags"):
+            msg = self.promptbot.listAllCategories()
+            return (target, msg)
+        elif msg.startswith("add tag"):
+            tags = re.findall("#\((.+)\)", msg)
+            tags.extend(re.findall("#([^\(\s]+)", msg))
+            if tags:
+                self.promptbot.addTags(tags)
+                return (target, "Tags added.")
+            else:
+                return (target, "No tags found. Try 'add tag(s) #tag or #(tag)'.")
+        #source commands
+        elif msg.startswith("source?"):
+            return (target, self.promptbot.getSource()) 
+        elif msg.startswith("add source"):
+            source = re.findall("@\((.+)\)", msg)
+            if source:
+                self.promptbot.addSource(source)
+                return (target, "Source added.")
+            else:
+                return (target, "No source found. Try 'add source @(source)'.")        
+	#prompt commands
         if msg.startswith("add prompt"):
             msg = re.sub("add prompt\W( )?", '', msg)
             #add rest of msg to list of prompts
@@ -72,30 +101,6 @@ class Bot(irc.IRCClient):
             return (target, msg)
         elif msg.startswith("index?"):
             return (target, self.promptbot.getIndex()) 
-        #tag commands
-        elif msg.startswith("tags?"):
-            return (target, self.promptbot.getTags()) 
-        elif msg.startswith("tags"):
-            msg = self.promptbot.listAllCategories()
-            return (target, msg)
-        elif msg.startswith("add tag"):
-            tags = re.findall("#\((.+)\)", msg)
-            tags.extend(re.findall("#([^\(\s]+)", msg))
-            if tags:
-                self.promptbot.addTags(tags)
-                return (target, "Tags added.")
-            else:
-                return (target, "No tags found. Try 'add tag(s) #tag or #(tag)'.")
-        #source commands
-        elif msg.startswith("source?"):
-            return (target, self.promptbot.getSource()) 
-        elif msg.startswith("add source"):
-            source = re.findall("@\((.+)\)", msg)
-            if source:
-                self.promptbot.addSource(source)
-                return (target, "Source added.")
-            else:
-                return (target, "No source found. Try 'add source @(source)'.")
         else: 
             msg = "Eh? Try asking me for a prompt."
             return (target, msg)
@@ -108,7 +113,7 @@ class Bot(irc.IRCClient):
         elif "help sources" in msg:
             self.msg(channel, "'source?' will give the source for the last given prompt.\n'add source @(source)' will add that source to the last given prompt.")
         else:
-            self.msg(channel,"Help topics include: 'prompts', 'tags', 'sources' \nType 'help $TOPIC' for more info.")
+            self.msg(channel,"Help topics include: 'prompts', 'tags', 'sources' \nType 'help $TOPIC' for more info.\nView promptbot's code at https://github.com/konayashi/promptbot")
 
 class BotFactory(protocol.ClientFactory):
     def __init__(self, channel, filename):
