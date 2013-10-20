@@ -1,8 +1,10 @@
 #!/usr/bin/python2.7
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
+from twisted.internet.task import LoopingCall, deferLater
 from random import shuffle
-import time, sys, re
+import sys, re
+from datetime import *
 import promptbot
 
 class Bot(irc.IRCClient):
@@ -14,12 +16,16 @@ class Bot(irc.IRCClient):
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
         self.promptbot = promptbot.PromptBot(open(self.factory.file, "r"))
-
+    
     def connectionLost(self, reason):
         irc.IRCClient.connectionLost(self, reason)
 
     def signedOn(self):
         self.join(self.factory.channel)
+
+    def secondsToMidnight(self):
+        nextMidnight = datetime.combine(date.today() + timedelta(1), time())
+        return (nextMidnight - datetime.now()).seconds
 
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
@@ -37,10 +43,42 @@ class Bot(irc.IRCClient):
                 #check for command
                 target, msg = self.commands(msg, user, channel)
                 self.msg(target, msg)
+    
+    def setTopic(self, channel):
+        today = datetime.today()
+        day = today.weekday()
+        topic = ""
+        if today.month == 10: 
+            topic = "%d days until NaNoWriMo " % (31 - today.day)
+        elif today.month == 11:
+            topic = "%d words " % (int(float(50000)/30*today.day))
+        if day == 2:
+            if not topic == "":
+                topic += "| "
+            topic += "Worldbuilding Wednesday: "
+            prompt = self.promptbot.promptByTag("worldbuilding")
+            topic += prompt
+        elif day == 0:
+            if not topic == "":
+                topic += "| "
+            topic += "Character Monday: "
+            prompt = self.promptbot.promptByTag("character")
+            topic += prompt
+        elif day == 3:
+            if not topic == "":
+                topic += "| "
+            topic += "Theme Thursday: "
+            prompt = self.promptbot.promptByTag("theme")
+            topic += prompt
+        else:
+            topic = datetime.now()
+        self.topic(channel, topic)
 
     def commands(self, msg, user, target):
+        if msg.startswith("topic"):
+            self.setTopic(target)
         #tag commands
-        if msg.startswith("tags?"):
+        elif msg.startswith("tags?"):
             return (target, self.promptbot.getTags()) 
         elif msg.startswith("tags"):
             msg = self.promptbot.listAllCategories()
@@ -115,13 +153,18 @@ class Bot(irc.IRCClient):
         else:
             self.msg(channel,"Help topics include: 'prompts', 'tags', 'sources' \nType 'help $TOPIC' for more info.\nView promptbot's code at https://github.com/konayashi/promptbot")
 
+    def __init__(self, channel):
+        lc = LoopingCall(self.setTopic, channel)
+        delay = self.secondsToMidnight() 
+        d = deferLater(reactor, delay, lc.start(86400)) #figure out time til midnight for delay, then should loop every 24 hours (86400 seconds).
+
 class BotFactory(protocol.ClientFactory):
     def __init__(self, channel, filename):
         self.channel = channel
         self.file = filename
 
     def buildProtocol(self, addr):
-        p = Bot()
+        p = Bot(self.channel)
         p.factory = self
         return p
 
