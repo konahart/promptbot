@@ -15,7 +15,7 @@ class Bot(irc.IRCClient):
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
-        self.promptbot = promptbot.PromptBot(open(self.factory.file, "r"))
+        self.promptbot = promptbot.PromptBot(open(self.factory.infile, "r"),self.factory.outfile)
     
     def connectionLost(self, reason):
         irc.IRCClient.connectionLost(self, reason)
@@ -23,9 +23,22 @@ class Bot(irc.IRCClient):
     def signedOn(self):
         self.join(self.factory.channel)
 
+    def joined(self, channel):
+        lc = LoopingCall(self.setTopic, channel)
+        delay = self.secondsToMidnight()
+        d = deferLater(reactor, delay, lc.start, 86400) #figure out time til midnight for delay, then should loop every 24 hours (86400 seconds).
+        d.addCallback(self.joined)
+
     def secondsToMidnight(self):
-        nextMidnight = datetime.combine(date.today() + timedelta(1), time())
+        nextMidnight = datetime.combine(date.today() + timedelta(1), time(0,1))
         return (nextMidnight - datetime.now()).seconds
+    
+    def secondsToHalfHour(self):
+        if datetime.now().minute < 30:
+            nextHalfHour = datetime.combine(date.today(), time(datetime.now().hour, 45))
+        else:
+            nextHalfHour = datetime.combine(date.today(), time(datetime.now().hour+1))
+        return (nextHalfHour - datetime.now()).seconds
 
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
@@ -70,56 +83,66 @@ class Bot(irc.IRCClient):
             topic += "Theme Thursday: "
             prompt = self.promptbot.promptByTag("theme")
             topic += prompt
-        else:
-            topic = datetime.now()
         self.topic(channel, topic)
 
     def commands(self, msg, user, target):
         if msg.startswith("topic"):
             self.setTopic(target)
+            return
         #tag commands
         elif msg.startswith("tags?"):
-            return (target, self.promptbot.getTags()) 
+            self.msg(target, self.promptbot.getTags()) 
+            return
         elif msg.startswith("tags"):
             msg = self.promptbot.listAllCategories()
-            return (target, msg)
+            self.msg(target, msg)
+            return
         elif msg.startswith("add tag"):
             tags = re.findall("#\((.+)\)", msg)
             tags.extend(re.findall("#([^\(\s]+)", msg))
             if tags:
                 self.promptbot.addTags(tags)
-                return (target, "Tags added.")
+                self.msg(target, "Tags added.")
+                return
             else:
-                return (target, "No tags found. Try 'add tag(s) #tag or #(tag)'.")
+                self.msg(target, "No tags found. Try 'add tag(s) #tag or #(tag)'.")
+                return
         #source commands
         elif msg.startswith("source?"):
-            return (target, self.promptbot.getSource()) 
+            self.msg(target, self.promptbot.getSource()) 
+            return
         elif msg.startswith("add source"):
             source = re.findall("@\((.+)\)", msg)
             if source:
                 self.promptbot.addSource(source)
-                return (target, "Source added.")
+                self.msg(target, "Source added.")
+                return
             else:
-                return (target, "No source found. Try 'add source @(source)'.")        
+                self.msg(target, "No source found. Try 'add source @(source)'.")        
+                return
 	#prompt commands
         if msg.startswith("add prompt"):
             msg = re.sub("add prompt\W( )?", '', msg)
             #add rest of msg to list of prompts
             self.promptbot.addPrompt(msg)
             msg = "Prompt added."
-            return (target, msg) 
+            self.msg(target, msg) 
+            return
         elif msg.startswith("last"):
             msg = self.promptbot.last()
-            return (target, msg)
+            self.msg(target, msg)
+            return
         elif msg.startswith("backup prompts"):
-            self.promptbot.backup(open(self.factory.file, "w"))
-            msg = "%d prompts backed up." % (len(self.promptbot.prompts))
+            self.promptbot.backup(open(self.factory.outfile, "w"))
+            msg = "%d prompts backed up to %s." % (len(self.promptbot.prompts), self.factory.outfile)
             target = user
-            return (target, msg)
+            self.msg(target, msg)
+            return
         index = re.findall('[0-9]+', msg)
         if index:
             msg = "%s: %s" % (user, self.promptbot.promptByIndex(int(index[0])))
-            return (target, msg)
+            self.msg(target, msg)
+            return
         tags = re.findall("#\((.+)\)", msg)
         tags.extend(re.findall("#([^\(\s]+)", msg))
         if tags:
@@ -133,15 +156,19 @@ class Bot(irc.IRCClient):
                 msg = "Not able to find any matching prompts."
             else:
                 msg = "%s: %s" % (user, prompt)
-            return (target, msg)
+            self.msg(target, msg)
+            return
         elif "prompt" in msg:
             msg = "%s: %s" % (user, self.promptbot.randomPrompt())
-            return (target, msg)
+            self.msg(target, msg)
+            return 
         elif msg.startswith("index?"):
-            return (target, self.promptbot.getIndex()) 
+            self.msg(target, self.promptbot.getIndex()) 
+            return 
         else: 
             msg = "Eh? Try asking me for a prompt."
-            return (target, msg)
+            self.msg(target, msg)
+            return
 
     def helpMenu(self, msg, user, channel):
         if "help prompts" in msg:
@@ -153,18 +180,17 @@ class Bot(irc.IRCClient):
         else:
             self.msg(channel,"Help topics include: 'prompts', 'tags', 'sources' \nType 'help $TOPIC' for more info.\nView promptbot's code at https://github.com/konayashi/promptbot")
 
-    def __init__(self, channel):
-        lc = LoopingCall(self.setTopic, channel)
-        delay = self.secondsToMidnight() 
-        d = deferLater(reactor, delay, lc.start(86400)) #figure out time til midnight for delay, then should loop every 24 hours (86400 seconds).
-
 class BotFactory(protocol.ClientFactory):
-    def __init__(self, channel, filename):
+    def __init__(self, channel, infile, outfile = ""):
         self.channel = channel
-        self.file = filename
+        self.infile = infile
+        if outfile:
+            self.outfile = outfile
+        else:
+            self.outfile = infile + ".pb"
 
     def buildProtocol(self, addr):
-        p = Bot(self.channel)
+        p = Bot()
         p.factory = self
         return p
 
@@ -176,6 +202,9 @@ class BotFactory(protocol.ClientFactory):
         reactor.stop()
 
 if __name__ == '__main__':
-    f = BotFactory(sys.argv[1], sys.argv[2])
+    if len(sys.argv) >= 4:
+        f = BotFactory(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        f = BotFactory(sys.argv[1], sys.argv[2])
     reactor.connectTCP("irc.cat.pdx.edu", 6667, f)
     reactor.run()

@@ -11,14 +11,14 @@ class Prompt(object):
         self.source = source
 
 class PromptBot:
-    def __init__(self, file):
-	self.file = file
+    def __init__(self, infile, outfile):
+	self.infile = infile
         self.categories = {}
         self.prompts = list()
         self.index = 0
-        for line in self.file.readlines():
+        for line in self.infile.readlines():
             self.addPrompt(line)
-        self.file.close()
+        self.infile.close()
 
     def addPrompt(self, text):
         tags = set(re.findall("#\(([^\)]+)\)", text))
@@ -97,8 +97,7 @@ class PromptBot:
        msg = ', '.join(self.categories.keys())
        return msg
 
-    def backup(self, file):
-        self.file = file
+    def backup(self, outfile):
         for prompt in self.prompts:
             line = prompt.text
             for tag in prompt.tags:
@@ -106,6 +105,6 @@ class PromptBot:
             for source in prompt.source:
                 line += " @(" + source + ")"
             line += "\n"
-            file.write(line)
-        self.file.close()
+            outfile.write(line)
+        outfile.close()
 

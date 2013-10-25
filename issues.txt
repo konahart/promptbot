@@ -5,6 +5,4 @@
 
 Ideas:
 -$CHARACTER/Mad Lib mode
--NaNo reminder
--Theme Thursdays topic set
 -praise
