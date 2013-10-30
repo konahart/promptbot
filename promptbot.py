@@ -2,7 +2,7 @@
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
 from random import choice
-import time, sys, re
+import sys, re
 
 class Prompt(object):
     def __init__(self, text, tags, source):
