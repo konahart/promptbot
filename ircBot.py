@@ -54,8 +54,7 @@ class Bot(irc.IRCClient):
                 self.msg(channel, msg)
             else:
                 #check for command
-                target, msg = self.commands(msg, user, channel)
-                self.msg(target, msg)
+                self.commands(msg, user, channel)
     
     def setTopic(self, channel):
         today = datetime.today()
@@ -64,7 +63,7 @@ class Bot(irc.IRCClient):
         if today.month == 10: 
             topic = "%d days until NaNoWriMo " % (31 - today.day)
         elif today.month == 11:
-            topic = "%d words " % (int(float(50000)/30*today.day))
+            topic = "Do you have your %d words yet? " % (int(float(50000)/30*today.day))
         if day == 2:
             if not topic == "":
                 topic += "| "
@@ -86,6 +85,11 @@ class Bot(irc.IRCClient):
         self.topic(channel, topic)
 
     def commands(self, msg, user, target):
+        if msg.startswith("load"):
+            msg = re.sub("load(\s)?", '', msg)
+            self.promptbot.loadPrompts(open(msg, "r"))
+            self.msg(target, "Prompts in %s added." % msg)
+            return
         if msg.startswith("topic"):
             self.setTopic(target)
             return

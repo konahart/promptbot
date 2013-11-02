@@ -20,13 +20,17 @@ class PromptBot:
             self.addPrompt(line)
         self.infile.close()
 
-    def addPrompt(self, text):
+    def addPrompt(self, text, dupeCheck=False):
         tags = set(re.findall("#\(([^\)]+)\)", text))
         tags.update(re.findall("#([^\(\s]+)", text))
         source = re.findall("@\(([^\)]+)\)", text)
         text = (re.sub("#\(([^\)]+)\)", "", text)).strip()
         text = (re.sub("#([^\(\s]+)", "", text)).strip()
         text = (re.sub("@\((.*)\)", "", text)).strip()
+        if dupeCheck:
+            for i in range(0, len(self.prompts)):
+                if text == self.prompts[i].text:
+                    return
         newPrompt = Prompt(text, tags, source)
         self.prompts.append(newPrompt)
         index = self.prompts.index(newPrompt)
@@ -36,7 +40,12 @@ class PromptBot:
                 self.categories[tag].append(index)
             else:
                 self.categories[tag] = [index]
-    
+   
+    def loadPrompts(self, infile):
+        for line in infile.readlines():
+            self.addPrompt(line, True)
+        self.infile.close()
+
     def addTags(self, tags, index = ""):
         if not index:
             index = self.index
