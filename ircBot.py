@@ -18,6 +18,7 @@ class Bot(irc.IRCClient):
         self.promptbot = promptbot.PromptBot(open(self.factory.infile, "r"),self.factory.outfile)
     
     def connectionLost(self, reason):
+        self.promptbot.backup(open(self.factory.outfile, "w"))
         irc.IRCClient.connectionLost(self, reason)
 
     def signedOn(self):
@@ -68,19 +69,19 @@ class Bot(irc.IRCClient):
             if not topic == "":
                 topic += "| "
             topic += "Worldbuilding Wednesday: "
-            prompt = self.promptbot.promptByTag("worldbuilding")
+            prompt = self.promptbot.promptByTag("worldbuilding",channel)
             topic += prompt
         elif day == 0:
             if not topic == "":
                 topic += "| "
             topic += "Character Monday: "
-            prompt = self.promptbot.promptByTag("character")
+            prompt = self.promptbot.promptByTag("character",channel)
             topic += prompt
         elif day == 3:
             if not topic == "":
                 topic += "| "
             topic += "Theme Thursday: "
-            prompt = self.promptbot.promptByTag("theme")
+            prompt = self.promptbot.promptByTag("theme",channel)
             topic += prompt
         self.topic(channel, topic)
 
@@ -95,7 +96,7 @@ class Bot(irc.IRCClient):
             return
         #tag commands
         elif msg.startswith("tags?"):
-            self.msg(target, self.promptbot.getTags()) 
+            self.msg(target, self.promptbot.getTags(target)) 
             return
         elif msg.startswith("tags"):
             msg = self.promptbot.listAllCategories()
@@ -105,7 +106,7 @@ class Bot(irc.IRCClient):
             tags = re.findall("#\((.+)\)", msg)
             tags.extend(re.findall("#([^\(\s]+)", msg))
             if tags:
-                self.promptbot.addTags(tags)
+                self.promptbot.addTags(tags, target)
                 self.msg(target, "Tags added.")
                 return
             else:
@@ -113,12 +114,12 @@ class Bot(irc.IRCClient):
                 return
         #source commands
         elif msg.startswith("source?"):
-            self.msg(target, self.promptbot.getSource()) 
+            self.msg(target, self.promptbot.getSource(target)) 
             return
         elif msg.startswith("add source"):
             source = re.findall("@\((.+)\)", msg)
             if source:
-                self.promptbot.addSource(source)
+                self.promptbot.addSource(source, target)
                 self.msg(target, "Source added.")
                 return
             else:
@@ -128,12 +129,12 @@ class Bot(irc.IRCClient):
         if msg.startswith("add prompt"):
             msg = re.sub("add prompt\W( )?", '', msg)
             #add rest of msg to list of prompts
-            self.promptbot.addPrompt(msg)
+            self.promptbot.addPrompt(msg, target)
             msg = "Prompt added."
             self.msg(target, msg) 
             return
         elif msg.startswith("last"):
-            msg = self.promptbot.last()
+            msg = self.promptbot.last(target)
             self.msg(target, msg)
             return
         elif msg.startswith("backup prompts"):
@@ -144,7 +145,7 @@ class Bot(irc.IRCClient):
             return
         index = re.findall('[0-9]+', msg)
         if index:
-            msg = "%s: %s" % (user, self.promptbot.promptByIndex(int(index[0])))
+            msg = "%s: %s" % (user, self.promptbot.promptByIndex(int(index[0]),target))
             self.msg(target, msg)
             return
         tags = re.findall("#\((.+)\)", msg)
@@ -154,7 +155,7 @@ class Bot(irc.IRCClient):
             prompt = "None."
             shuffle(tags)
             while prompt == "None." and i < len(tags):
-                prompt = self.promptbot.promptByTag(tags[i])
+                prompt = self.promptbot.promptByTag(tags[i], target)
                 i += 1
             if prompt == "None.":
                 msg = "Not able to find any matching prompts."
@@ -163,11 +164,11 @@ class Bot(irc.IRCClient):
             self.msg(target, msg)
             return
         elif "prompt" in msg:
-            msg = "%s: %s" % (user, self.promptbot.randomPrompt())
+            msg = "%s: %s" % (user, self.promptbot.randomPrompt(target))
             self.msg(target, msg)
             return 
         elif msg.startswith("index?"):
-            self.msg(target, self.promptbot.getIndex()) 
+            self.msg(target, self.promptbot.getIndex(target)) 
             return 
         else: 
             msg = "Eh? Try asking me for a prompt."
