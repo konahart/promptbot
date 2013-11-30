@@ -1,8 +1,6 @@
 -Change serialization
--Add commands:
-    remove tag
 -Unicode
+-add 'stop topic' command
 
 Ideas:
--$CHARACTER/Mad Lib mode
--praise
+-$CHARACTER/Mad Lib modes

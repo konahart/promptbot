@@ -147,6 +147,7 @@ class ircPromptBot(irc.IRCClient):
                     msg = "%s: %s" % (user, self.promptbot.entryByIndex(l, int(index[0]),target))
                     self.msg(target, msg)
                     return
+            elif l in m[0]:
                 msg = "%s: %s" % (user, self.promptbot.randomEntry(l, target)) 
                 self.msg(target, msg)
                 return
@@ -263,7 +264,7 @@ class ircPromptBot(irc.IRCClient):
                     return
             index = re.findall('[0-9]+', msg)
             if index:
-                msg = "%s: %s" % (user, self.promptbot.entryByIndex(self.lastlists[target], int(index[0]),target))
+                msg = "%s: %s" % (user, self.promptbot.entryByIndex(self.lastLists[target], int(index[0]),target))
                 self.msg(target, msg)
                 return
             elif "random" in msg:
@@ -277,11 +278,11 @@ class ircPromptBot(irc.IRCClient):
 
     def helpMenu(self, msg, user, channel):
         if "help prompts" in msg:
-            self.msg(channel, "'#(tag)' for a prompt with that tag. Multiple tags will give a prompt with a tag randomly selected from those provided.\n\t'promptbot, I want a prompt from #worldbuilding or #theme' or 'promptbot, #worldbuilding #theme'\nUsing a number when talking to promptbot will return the prompt with that index. The last prompt's index can be retrieved with 'index?'\nFor a random prompt, just use the word 'prompt'\n\t'promptbot, gimme a prompt' or 'promptbot, prompt'\n'last' will reprint the last prompt.")
+            self.msg(channel, "'tag' for a prompt with that tag. Multiple tags will give a prompt with a tag randomly selected from those provided.\n\t'promptbot, I want a prompt from worldbuilding or theme' or 'promptbot, worldbuilding theme'\nUsing a number when talking to promptbot will return the prompt with that index. The last entry's index can be retrieved with 'index?'\nFor a random prompt, just use the word 'prompt'\n\t'promptbot, gimme a prompt' or 'promptbot, prompt'\n'last prompt' will reprint the last prompt.")
         elif "help tags" in msg:
-            self.msg(channel, "'tags?' will give the list of tags for the last given prompt.\n'add tag(s) #tag #(tag with spaces)' will add those tags to the last given prompt.")
+            self.msg(channel, "'tags?' will give the list of tags for the last given entry.\n'add tag(s) #tag #(tag with spaces)' will add those tags to the last given entry.\n'remove tag(s) #tag #(tag with space)' will remove those tags from the last given entry.")
         elif "help sources" in msg:
-            self.msg(channel, "'source?' will give the source for the last given prompt.\n'add source @(source)' will add that source to the last given prompt.")
+            self.msg(channel, "'source?' will give the source for the last given entry.\n'add source @source @(source with spaces)' will add that source to the last given entry.\n'remove source @source @(source with spaces)' will remove that source from the last given entry.")
         else:
             self.msg(channel,"Help topics include: 'prompts', 'tags', 'sources' \nType 'help $TOPIC' for more info.\nView promptbot's code at https://github.com/konayashi/promptbot")
 
@@ -312,4 +313,4 @@ if __name__ == '__main__':
         reactor.connectTCP(sys.argv[1], 6667, f)
         reactor.run()
     else:
-        print "Usage: ircBot host channel <input prompt file> [prompt output file]"
+        print "Usage: ircPromptBot host channel <input prompt file> [prompt output file]"
