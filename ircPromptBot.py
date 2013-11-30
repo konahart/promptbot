@@ -148,8 +148,8 @@ class ircPromptBot(irc.IRCClient):
                     self.msg(target, msg)
                     return
                 msg = re.sub(l,'', msg)
-                tags = re.findall("\((.+)\)", msg)
-                tags.extend(re.findall("([^\(\s]+)", msg))
+                tags = re.findall("#?\((.+)\)", msg)
+                tags.extend(re.findall("#?([^\(\s]+)", msg))
                 if tags:
                     i = 0
                     shuffle(tags)
@@ -165,6 +165,8 @@ class ircPromptBot(irc.IRCClient):
                 if index:
                     self.msgOrMe(target, user, self.promptbot.entryByIndex(l, int(index[0]),target))
                     return
+                self.msgOrMe(target, user, self.promptbot.randomEntry(l, target))
+                return
             elif l in m[0]:
                 self.msgOrMe(target, user, self.promptbot.randomEntry(l, target))
                 return
@@ -175,8 +177,8 @@ class ircPromptBot(irc.IRCClient):
                 return
             elif msg.startswith("add tag"):
             #add a tag to last entry printed
-                tags = re.findall("\((.+)\)", msg)
-                tags.extend(re.findall("([^\(\s]+)", msg))
+                tags = re.findall("#?\((.+)\)", msg)
+                tags.extend(re.findall("#?([^\(\s]+)", msg))
                 if tags:
                     self.promptbot.addTags(self.lastLists[target], tags, target)
                     if len(tags) > 1:
@@ -213,8 +215,8 @@ class ircPromptBot(irc.IRCClient):
                 return 
             elif msg.startswith("remove tag"):
             #remove a tag from last entry printed
-                tags = re.findall("\((.+)\)", msg)
-                tags.extend(re.findall("([^\(\s]+)", msg))
+                tags = re.findall("#?\((.+)\)", msg)
+                tags.extend(re.findall("#?([^\(\s]+)", msg))
                 if tags:
                     self.promptbot.removeTags(self.lastLists[target], tags, target)
                     if len(tags) > 1:
@@ -265,8 +267,8 @@ class ircPromptBot(irc.IRCClient):
             if msg.startswith("topic"):
                 self.setTopic(target)
                 return
-            tags = re.findall("\((.+)\)", msg)
-            tags.extend(re.findall("([^\(\s]+)", msg))
+            tags = re.findall("#\((.+)\)", msg)
+            tags.extend(re.findall("#([^\(\s]+)", msg))
             if tags:
                 self.lastLists[target] = "prompt"
                 i = 0
