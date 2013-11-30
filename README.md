@@ -3,7 +3,7 @@
 
 An irc bot that gives writing prompts on command.
 
-Usage: ircPromptBot host channel inputPromptFile outputFile
+Usage: ircPromptBot host channel inputPromptFile [outputFile]
 
 <br>
 
