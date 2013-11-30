@@ -68,8 +68,7 @@ class ircPromptBot(irc.IRCClient):
         #will try to set the topic every day at midnight until stopTopic is called.
         self.lc = LoopingCall(self.setTopic, channel)
         delay = self.secondsToMidnight()
-        d = deferLater(reactor, 1, self.lc.start, 30)
-        #d = deferLater(reactor, delay, self.lc.start, 86400)
+        d = deferLater(reactor, delay, self.lc.start, 86400)
         #figure out time til midnight for delay, then should loop every 24 hours (86400 seconds).
         self.d = d
         d.addCallback(self.startTopic)
@@ -93,9 +92,30 @@ class ircPromptBot(irc.IRCClient):
             elif msg == "github":
                 msg = "%s: %s" % (user, "https://github.com/konayashi/promptbot")
                 self.msg(channel, msg)
+            elif msg.startswith("change nick"):
+                newNick = msg.split()[2]
+                newNick = re.sub("change nick(\s)*","", msg)
+                self.setNick(newNick)
+            elif msg.startswith("join"):
+                msg = msg.split()
+                if len(msg) >= 3:
+                #if there's a channel key
+                    self.join(msg[1], msg[2])
+                else:
+                    self.join(msg[1])
+            elif msg.startswith("leave"):
+                self.leave(channel)
             else:
-                #check for command
+                #check for promptbot-specific command
                 self.commands(msg, user, channel)
+
+    def msgOrMe(self, target, user, msg, prepend=""):
+        if msg.startswith("/me"):
+            action = re.sub("/me(\s)*","",msg)
+            self.describe(target, action)
+        else:
+            msg = "%s: %s%s" % (user, prepend, msg)
+            self.msg(target, msg)
     
     def commands(self, msg, user, target):
         m = msg.split()
@@ -111,7 +131,7 @@ class ircPromptBot(irc.IRCClient):
                     return
                 elif msg.startswith("last "+l):
                     msg = self.promptbot.last(l, target)
-                    self.msg(target, msg)
+                    self.msgOrMe(target, user, msg)
                     return
                 elif msg.startswith(l+" tags"):
                     self.msg(target, self.promptbot.listTags(l))
@@ -123,7 +143,7 @@ class ircPromptBot(irc.IRCClient):
                     self.msg(target, msg)
                     return
                 elif msg.startswith("load "+l):
-                    msg = re.sub("load "+l+"(s)?(\s)?", '', msg)
+                    msg = re.sub("load "+l+"s?(\s)?", '', msg)
                     msg = self.promptbot.loadEntries(l, msg)
                     self.msg(target, msg)
                     return
@@ -131,7 +151,6 @@ class ircPromptBot(irc.IRCClient):
                 tags = re.findall("\((.+)\)", msg)
                 tags.extend(re.findall("([^\(\s]+)", msg))
                 if tags:
-                    self.lastLists[target] = "prompt"
                     i = 0
                     shuffle(tags)
                     prompt = "No entries"
@@ -139,22 +158,20 @@ class ircPromptBot(irc.IRCClient):
                         prompt = self.promptbot.entryByTag(self.lastLists[target], tags[i], target)
                         i += 1
                     if not "No entries" in prompt:
-                        msg = "%s: %s: %s" % (user, tags[i-1].capitalize(), prompt)
-                        self.msg(target, msg)
+                        prepend = tags[i-1].capitalize() + ": "
+                        self.msgOrMe(target, user, prompt, prepend)
                         return
                 index = re.findall('[0-9]+', msg)
                 if index:
-                    msg = "%s: %s" % (user, self.promptbot.entryByIndex(l, int(index[0]),target))
-                    self.msg(target, msg)
+                    self.msgOrMe(target, user, self.promptbot.entryByIndex(l, int(index[0]),target))
                     return
             elif l in m[0]:
-                msg = "%s: %s" % (user, self.promptbot.randomEntry(l, target)) 
-                self.msg(target, msg)
+                self.msgOrMe(target, user, self.promptbot.randomEntry(l, target))
                 return
         else: 
             if msg.startswith("last"):
-                msg = self.promptbot.last(self.lastLists[target], target)
-                self.msg(target, msg)
+                prompt = self.promptbot.last(self.lastLists[target], target)
+                self.msgOrMe(target, user, prompt)
                 return
             elif msg.startswith("add tag"):
             #add a tag to last entry printed
@@ -196,8 +213,8 @@ class ircPromptBot(irc.IRCClient):
                 return 
             elif msg.startswith("remove tag"):
             #remove a tag from last entry printed
-                tags = re.findall("#\((.+)\)", msg)
-                tags.extend(re.findall("#([^\(\s]+)", msg))
+                tags = re.findall("\((.+)\)", msg)
+                tags.extend(re.findall("([^\(\s]+)", msg))
                 if tags:
                     self.promptbot.removeTags(self.lastLists[target], tags, target)
                     if len(tags) > 1:
@@ -248,8 +265,8 @@ class ircPromptBot(irc.IRCClient):
             if msg.startswith("topic"):
                 self.setTopic(target)
                 return
-            tags = re.findall("#\((.+)\)", msg)
-            tags.extend(re.findall("#([^\(\s]+)", msg))
+            tags = re.findall("\((.+)\)", msg)
+            tags.extend(re.findall("([^\(\s]+)", msg))
             if tags:
                 self.lastLists[target] = "prompt"
                 i = 0
@@ -259,17 +276,17 @@ class ircPromptBot(irc.IRCClient):
                     prompt = self.promptbot.entryByTag(self.lastLists[target], tags[i], target)
                     i += 1
                 if not "No entries" in prompt:
-                    msg = "%s: %s: %s" % (user, tags[i-1].capitalize(), prompt)
-                    self.msg(target, msg)
+                    prepend = tags[i-1].capitalize() + ": "
+                    self.msgOrMe(target, user, prompt, prepend)
                     return
             index = re.findall('[0-9]+', msg)
             if index:
-                msg = "%s: %s" % (user, self.promptbot.entryByIndex(self.lastLists[target], int(index[0]),target))
-                self.msg(target, msg)
+                prompt = self.promptbot.entryByIndex(self.lastLists[target], int(index[0]),target)
+                self.msgOrMe(target, user, prompt)
                 return
             elif "random" in msg:
-                msg = "%s: %s" % (user, self.promptbot.completelyRandomEntry(target))
-                self.msg(target, msg)
+                prompt = self.promptbot.completelyRandomEntry(target)
+                self.msgOrMe(target, user, prompt)
                 return 
             else: 
                 msg = "Eh? Try asking me for a prompt."
