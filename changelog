@@ -1,0 +1,6 @@
+13 December 2013
+- start and stop looping topics in multiple channels
+- argparsing now allows for more setup before joining channels, init file
+- now handles ssl
+- new lists cannot be created with an existing list name nor name+s, e.g., cannot have "prompt" and "prompts" lists
+- automatically adds user adding prompt as a source for the prompt ("added by $USER")

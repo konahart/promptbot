@@ -80,6 +80,11 @@ class ListBot:
             index = self.indices[channel][listName]
         self.lists[listName].entries[index].source.extend(source)
 
+    def rewriteEntry(self, listName, text, channel, index=""):
+        if not index:
+            index = self.indices[channel][listName]
+        self.lists[listName].entries[index].text = text
+
     def removeTags(self, listName, tags, channel, index = ""):
         if not index:
             index = self.indices[channel][listName]
@@ -87,8 +92,7 @@ class ListBot:
             if tag in self.lists[listName].tags:
                 if index in self.lists[listName].tags[tag]:
                     self.lists[listName].tags[tag].remove(index)
-                    if tag in self.lists[listName].tags:
-                        self.lists[listName].entries[index].tags.remove(tag)
+                    self.lists[listName].entries[index].tags.remove(tag)
 
     def removeSource(self, listName, source, channel, index = ""):
         if not index:

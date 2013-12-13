@@ -1,8 +1,6 @@
 -Change serialization
 -Unicode
--add 'stop topic' command
 -add 'remove list' command
--allow for 'load list*s* file'
 
 Ideas:
 -$CHARACTER/Mad Lib modes
