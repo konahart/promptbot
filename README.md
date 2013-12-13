@@ -3,16 +3,35 @@
 
 An irc bot that gives writing prompts on command.
 
-Usage: ircPromptBot host channel inputPromptFile [outputFile]
+<b>Example Usage:</b>
+./ircPromptbot -s irc.freenode.net -c #ohhi -l prompt -l praise -l advice
 
+cat myinits.pb
+	-s irc.freenode.net -c #ohhi -l prompt -l praise -l advice
+./ircPromptbot myinits.pb
+
+The options below can be specified in a file or on the command line. ircPromptBot.py will look for init.pb by default if no options are provided on the command line.
 <br>
 
-<b>Defaults:</b>
+Usage: ircPromptBot.py [-h] [-s SERVER] [-p PORT] [--ssl]
+                       [-c CHANNELS [CHANNELS ...]] [-n NICK]
+                       [--pass PASSWORD] [-l LIST [LIST ...]] [-o OUTPUT]
 
-nickname = "promptbot"
-
-lists = prompt, advice, praise
-
+  -h, --help            show this help message and exit
+  -s SERVER, --server SERVER
+                        server to connect to
+  -p PORT, --port PORT  port to connect to
+  --ssl
+  -c CHANNELS [CHANNELS ...], --channel CHANNELS [CHANNELS ...]
+                        channel(s) to join
+  -n NICK, --nick NICK, --nickname NICK
+                        nick of bot
+  --pass PASSWORD, --password PASSWORD
+                        nick of bot
+  -l LIST [LIST ...], --list LIST [LIST ...]
+                        listname [input files]
+  -o OUTPUT, --output OUTPUT
+                        output file name
 <br>
 
 <b>Example Usage:</b>
