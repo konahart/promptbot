@@ -351,7 +351,7 @@ def main():
     parser.add_argument("--ssl", action="store_true")
     parser.add_argument("-c", "--channel", nargs="+", dest="channels", help="channel(s) to join")
     parser.add_argument("-n", "--nick", "--nickname", default="promptbot", help="nick of bot")
-    parser.add_argument("--pass", "--password", default="promptbot", dest="password", help="nick of bot")
+    parser.add_argument("--pass", "--password", default="promptbot", dest="password")
     parser.add_argument("-l", "--list", nargs="+", default=[], action="append", help="listname [input files]")
     parser.add_argument("-o", "--output", default="prompbot.pb", help="output file name")
     if len(sys.argv) == 1:

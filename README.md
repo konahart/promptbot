@@ -3,10 +3,10 @@
 
 An irc bot that gives writing prompts on command.
 
-<b>Example Usage:</b>
-./ircPromptbot -s irc.freenode.net -c #ohhi -l prompt -l praise -l advice
+<b>Example Usage:</b> <br>
+./ircPromptbot -s irc.freenode.net -c #ohhi -l prompt -l praise -l advice<br>
 
-cat myinits.pb
+cat myinits.pb<br>
 	-s irc.freenode.net -c #ohhi -l prompt -l praise -l advice
 ./ircPromptbot myinits.pb
 
@@ -17,21 +17,20 @@ Usage: ircPromptBot.py [-h] [-s SERVER] [-p PORT] [--ssl]
                        [-c CHANNELS [CHANNELS ...]] [-n NICK]
                        [--pass PASSWORD] [-l LIST [LIST ...]] [-o OUTPUT]
 
-  -h, --help            show this help message and exit
+  -h, --help            show this help message and exit<br>
   -s SERVER, --server SERVER
-                        server to connect to
-  -p PORT, --port PORT  port to connect to
-  --ssl
+                        server to connect to <br>
+  -p PORT, --port PORT  port to connect to <br>
+  --ssl <br>
   -c CHANNELS [CHANNELS ...], --channel CHANNELS [CHANNELS ...]
-                        channel(s) to join
+                        channel(s) to join <br>
   -n NICK, --nick NICK, --nickname NICK
-                        nick of bot
+                        nick of bot <br>
   --pass PASSWORD, --password PASSWORD
-                        nick of bot
   -l LIST [LIST ...], --list LIST [LIST ...]
-                        listname [input files]
+                        listname [input files] <br>
   -o OUTPUT, --output OUTPUT
-                        output file name
+                        output file name <br>
 <br>
 
 <b>Example Usage:</b>
