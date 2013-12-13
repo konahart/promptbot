@@ -15,6 +15,43 @@ lists = prompt, advice, praise
 
 <br>
 
+<b>Example Usage:</b>
+
+	Kona: prompt
+	promptbot: Kona: A famous religious leader enters the afterlife. It turns out their religion wasn't the right one.
+	Kona: tags?
+	promptbot: religion; death
+	Kona: source?
+	promptbot: reddit; r/WritingPrompts; http://redd.it/1pqtc1
+	Kona: index?
+	promptbot: Prompt #735
+	Kona: advice
+	promptbot: Kona: Enter contests. Submit to periodicals. Get yourself out there. Cultivate an identity.
+	Kona: source?
+	promptbot: http://prompts-and-pointers.tumblr.com/post/44554951694; http://prompts-and-pointers.tumblr.com
+	Kona: index?
+	promptbot: Advice #89
+	Kona: last
+	promptbot: Enter contests. Submit to periodicals. Get yourself out there. Cultivate an identity.
+	Kona: last prompt
+	promptbot: A famous religious leader enters the afterlife. It turns out their religion wasn't the right one.
+	Kona: add list task
+	promptbot: New task list added.
+	Kona: task tags
+	promptbot: Task has no tags.
+	Kona: add task Get a beer. #beer
+	promptbot: Task added.
+	Kona: task tags
+	promptbot: beer
+	Kona: tags
+	promptbot: advice: quote, advice, challenge, sci-fi, description
+	promptbot: task: beer
+	promptbot: prompt: worldbuilding, dialogue, death, plot, character, horror, Get Inside Your Character's Head,
+	           religion, theme, anthropomorphization
+	promptbot: praise:
+
+<br>
+
 <b>Common Commands:</b>
 
 	list
@@ -91,42 +128,6 @@ links to https://github.com/konayashi/promptbot
 	
 <br>	
 
-<b>Example Usage:</b>
-
-	Kona: prompt
-	promptbot: Kona: A famous religious leader enters the afterlife. It turns out their religion wasn't the right one.
-	Kona: tags?
-	promptbot: religion; death
-	Kona: source?
-	promptbot: reddit; r/WritingPrompts; http://redd.it/1pqtc1
-	Kona: index?
-	promptbot: Prompt #735
-	Kona: advice
-	promptbot: Kona: Enter contests. Submit to periodicals. Get yourself out there. Cultivate an identity.
-	Kona: source?
-	promptbot: http://prompts-and-pointers.tumblr.com/post/44554951694; http://prompts-and-pointers.tumblr.com
-	Kona: index?
-	promptbot: Advice #89
-	Kona: last
-	promptbot: Enter contests. Submit to periodicals. Get yourself out there. Cultivate an identity.
-	Kona: last prompt
-	promptbot: A famous religious leader enters the afterlife. It turns out their religion wasn't the right one.
-	Kona: add list task
-	promptbot: New task list added.
-	Kona: task tags
-	promptbot: Task has no tags.
-	Kona: add task Get a beer. #beer
-	promptbot: Task added.
-	Kona: task tags
-	promptbot: beer
-	Kona: tags
-	promptbot: advice: quote, advice, challenge, sci-fi, description
-	promptbot: task: beer
-	promptbot: prompt: worldbuilding, dialogue, death, plot, character, horror, Get Inside Your Character's Head,
-	           religion, theme, anthropomorphization
-	promptbot: praise:
-
-<br>
 
 <b>More Commands:</b>
 
