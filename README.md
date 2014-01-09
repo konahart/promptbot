@@ -1,19 +1,19 @@
-<b>ircPromptBot</b>
+<b>promptbot</b>
 =========
 
 An irc bot that gives writing prompts on command.
 
 <b>Example Usage:</b> <br>
-./ircPromptbot -s irc.freenode.net -c #ohhi -l prompt -l praise -l advice<br>
+./promptbot -s irc.freenode.net -c #ohhi -l prompt -l praise -l advice<br>
 
 cat myinits.pb<br>
 	-s irc.freenode.net -c #ohhi -l prompt -l praise -l advice
-./ircPromptbot myinits.pb
+./promptbot myinits.pb
 
-The options below can be specified in a file or on the command line. ircPromptBot.py will look for init.pb by default if no options are provided on the command line.
+The options below can be specified in a file or on the command line. promptbot.py will look for init.pb by default if no options are provided on the command line.
 <br>
 
-Usage: ircPromptBot.py [-h] [-s SERVER] [-p PORT] [--ssl]
+Usage: promptbot.py [-h] [-s SERVER] [-p PORT] [--ssl]
                        [-c CHANNELS [CHANNELS ...]] [-n NICK]
                        [--pass PASSWORD] [-l LIST [LIST ...]] [-o OUTPUT]
 
