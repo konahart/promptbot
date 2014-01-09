@@ -1,227 +1,186 @@
-#!/usr/bin/python3.7
-from collections import defaultdict
+#!/usr/bin/python2.7
 from random import choice
+from collections import Counter
 import sys, re
 
 class Entry(object):
     def __init__(self, text, tags, source):
-        self.text = text
-        self.tags = tags
-        self.source = source
+        self.text = text #string
+        self.tags = tags #set
+        self.source = source #list
 
-class List(object):
+class ListKeeper:
     def __init__(self):
-        self.entries = list()
-        self.tags = {}
-
-class ListBot:
-    def __init__(self):
-        self.indices = defaultdict(lambda: defaultdict(int))
-        #Keeps track of the last element accessed per list per channel by
-        #using the channel name as a key.
         self.lists = {}
 
+#add list to listkeeper
     def addList(self, listName):
         if listName in self.lists:
-            return "There is already a list with that name."
+            return False
         else:
-            self.lists[listName] = List()
-            for channel in self.indices:
-                self.indices[channel][listName] = 0
-            return "List %s added." % listName
+            self.lists[listName] = []
+            return True 
 
-    def addEntry(self, listName, entryText, channel, dupCheck=False):
-        tags = set(re.findall("#\(([^\)]+)\)", entryText))
-        tags.update(re.findall("#([^\(\s]+)", entryText))
-        source = re.findall("@\(([^\)]+)\)", entryText)
-        entryText = (re.sub("#\(([^\)]+)\)", "", entryText)).strip()
-        entryText = (re.sub("#([^\(\s]+)", "", entryText)).strip()
-        entryText = (re.sub("@\((.*)\)", "", entryText)).strip()
+#add entry to list in listkeeper
+    def addEntry(self, listName, text, tags, source, dupCheck=False):
         if dupCheck:
         #duplicate check
-            for i in range(0, len(self.lists[listName].entries)):
-                for entry in self.lists[listName].entries:
-                    if entryText == entry.text:
-                        return
-        newEntry = Entry(entryText, tags, source)
-        self.lists[listName].entries.append(newEntry)
-        index = self.lists[listName].entries.index(newEntry)
-        for tag in tags:
-            if tag in self.lists[listName].tags:
-                self.lists[listName].tags[tag].append(index)
-            else:
-                self.lists[listName].tags[tag] = [index]
-        self.indices[channel][listName] = index
-   
-    def loadEntries(self, listName, inf):
+            for i in range(0, len(self.lists[listName])):
+                if text == self.lists[listName][i].text:
+                    self.lists[listName][i].tags.update(tags)
+                    self.lists[listName][i].source.extend(tags)
+                    return True, i
+        newEntry = Entry(text, tags, source)
+        self.lists[listName].append(newEntry)
+        index = self.lists[listName].index(newEntry)
+        return False, index
+
+#add tag or tags to entry in list in listkeeper
+    def addTags(self, listName, index, tags):
         try:
-            with open(inf, "r"):
-                i = 0
-                for line in open(inf, "r").readlines():
-                    self.addEntry(listName, line, "listbot", True)
-                    i += 1
-                open(inf, "r").close()
-                return "%d %s entries in %s loaded." % (i, listName, inf)
-        except IOError: 
-            return "No such file '%s'" % (inf)
+            self.lists[listName][index].tags.update(tags)
+            return True
+        except StandardError:
+            return False
 
-    def addTags(self, listName, tags, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        for tag in tags:
-            if tag in self.lists[listName].tags:
-                self.lists[listName].tags[tag].append(index)
-            else:
-                self.lists[listName].tags[tag] = [index]
-        self.lists[listName].entries[index].tags.update(tags)
+#add source or sources to entry in list in listkeeper
+    def addSource(self, listName, index, source):
+        try:
+            self.lists[listName][index].source.extend(source)
+            return True
+        except StandardError:
+            return False
 
-    def addSource(self, listName, source, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        self.lists[listName].entries[index].source.extend(source)
+#change text of entry in list in listkeeper
+    def rewriteEntry(self, listName, index, text):
+        try:
+            self.lists[listName][index].text = text
+            return True
+        except StandardError:
+            return False
 
-    def rewriteEntry(self, listName, text, channel, index=""):
-        if not index:
-            index = self.indices[channel][listName]
-        self.lists[listName].entries[index].text = text
+#remove tag or tags to entry in list in listkeeper
+    def removeTags(self, listName, index, tags):
+        try:
+            for t in tags:
+                self.lists[listName][index].tags.discard(t)
+            return True
+        except StandardError:
+            return False
 
-    def removeTags(self, listName, tags, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        for tag in tags:
-            if tag in self.lists[listName].tags:
-                if index in self.lists[listName].tags[tag]:
-                    self.lists[listName].tags[tag].remove(index)
-                    self.lists[listName].entries[index].tags.remove(tag)
+#remove source or sources to entry in list in listkeeper
+    def removeSource(self, listName, index, source):
+        try:
+            for s in source:
+                self.lists[listName][index].source.remove(s)
+            return True
+        except StandardError, ValueError:
+            return False
 
-    def removeSource(self, listName, source, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        for s in source:
-            if s in self.lists[listName].entries[index].source:
-                self.lists[listName].entries[index].source.remove(s)
-
-    def getTags(self, listName, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        if len(self.lists[listName].entries) > 0:
-            tags = '; '.join(self.lists[listName].entries[index].tags)
+#return tags of entry in list in listkeeper
+    def getTags(self, listName, index):
+        try:
+            tags = self.lists[listName][index].tags
             if tags:
-                return tags
+                return list(tags)
             else:
-                return "No tags."
-        else:
-            return "No %s entries to have tags." % listName
+                return []
+        except StandardError:
+            return False
     
-    def getSource(self, listName, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        if len(self.lists[listName].entries) > 0:
-            source = '; '.join(self.lists[listName].entries[index].source)
+#return sources of entry in list in listkeeper
+    def getSource(self, listName, index):
+        try:
+            source = self.lists[listName][index].source
             if source:
                 return source
             else:
-                return "No source given."
-        else:
-            return "No %s entries to have sources." % listName
+                return []
+        except StandardError:
+            return False
 
-    def getIndex(self, listName, channel, index = ""):
-        if not index:
-            index = self.indices[channel][listName]
-        if len(self.lists[listName].entries) > 0:
-            return "%s #%d" % (listName.capitalize(), index)
-        else:
-            return "No %s entries to have indexes." % listName
-
-    def last(self, listName, channel):
-        index = self.indices[channel][listName]
-        if len(self.lists[listName].entries) > 0:
-            return self.lists[listName].entries[index].text
-        else:
-            return "%s has no entries." % listName.capitalize()
-
-    def randomEntry(self, listName, channel):
-        l = len(self.lists[listName].entries)
+#return randomly-chosen entry from specific list in listkeeper
+    def randomEntry(self, listName):
+        l = len(self.lists[listName])
         if l > 0:
-            index = choice(range(0, len(self.lists[listName].entries)))
-            self.indices[channel][listName] = index
-            return self.lists[listName].entries[index].text
+            index = choice(range(0, len(self.lists[listName])))
+            return index, self.lists[listName][index].text
         else:
-            return "%s has no entries." % listName
+            return None, None
         
-    def completelyRandomEntry(self, channel):
+#return randomly-chosen entry from randomly-chosen list in listkeeper
+    def completelyRandomEntry(self):
         lists = []
+        #compile list of non-empty lists
         for l in self.lists:
-           if len(self.lists[l].entries) > 0:
+           if len(self.lists[l]) > 0:
                lists.append(l)
         if lists:
             randomList = choice(lists)
-            entry = choice(range(0, len(self.lists[randomList].entries)))
-            self.indices[channel][randomList] = entry
-            return self.lists[randomList].entries[entry].text
+            index = choice(range(0, len(self.lists[randomList])))
+            return index, randomList, self.lists[randomList][index].text
         else:
-            return "there are no entries."
+            return None, None, None
     
-    def entryByTag(self, listName, tag, channel):
-        if tag in self.lists[listName].tags:
-            index = choice(self.lists[listName].tags[tag])
-            self.indices[channel][listName] = index
-            return self.lists[listName].entries[index].text
-        else:
-            return "No entries have tag %s." % tag
+#return randomly-chosen entry that has tag from specific list in listkeeper
+    def entryByTag(self, listName, tag):
+        indices = range(0, len(self.lists[listName]))
+        while not indices == []:
+            index = choice(indices)
+            if tag in self.lists[listName][index].tags:
+                return index, self.lists[listName][index].text
+            indices.remove(index)
+        return None, None
 
-    def entryByIndex(self, listName, index, channel):
-        if index < len(self.lists[listName].entries):
-            self.indices[channel][listName] = index
-            return self.lists[listName].entries[index].text
-        else:
-            return "I only contain %s %s entries." % (len(self.lists[listName].entries),listName)
+#return entry with index in specific list in listkeeper
+    def entryByIndex(self, listName, index):
+        try:
+            return self.lists[listName][index].text
+        except StandardError:
+            return False
+
+#return length of specific list in listkeeper
+    def listLength(self, listName):
+        return len(self.lists[listName])
     
+#return all tags in specific list in listkeeper    
     def listTags(self, listName):
-        if len(self.lists[listName].tags) > 0:
-            msg = ', '.join(self.lists[listName].tags.keys())
-        else:
-            msg = "%s has no tags." % (listName.capitalize())
-        return msg
+        tags = Counter()
+        for i in range(0, len(self.lists[listName])):
+            tags.update(self.lists[listName][i].tags)
+        return dict(tags)
 
+#return all tags in all lists in listkeeper    
     def listAllTags(self):
-        msg = ""
+        tags = {}
         for listName in self.lists:
-            tags = ', '.join(self.lists[listName].tags.keys())
-            tags = listName + ": " + tags + "\n"
-            msg += tags
-        return msg
+            tags[listName] = self.listTags(listName)
+        return tags
 
+#back up a specific list in listkeeper
     def backup(self, listName, outfile):
         if len(self.lists) == 1:
             outname = outfile 
         else:
             outname = outfile + "." + listName 
-        out = open(outname, "w")
-        for entry in self.lists[listName].entries:
-            line = entry.text
-            for tag in entry.tags:
-                line += " #(" + tag + ")"
-            for source in entry.source:
-                line += " @(" + source + ")"
-            line += "\n"
-            out.write(line)
-        out.close()
-        return outname
+        try:
+            with open(outname, "w") as out:
+                for entry in self.lists[listName]:
+                    line = entry.text
+                    for tag in entry.tags:
+                        line += " #(" + tag + ")"
+                    for source in entry.source:
+                        line += " @(" + source + ")"
+                    line += "\n"
+                    out.write(line)
+                out.close()
+                return outname
+        except IOError:
+            return None
 
+#back up all lists in listkeeper
     def backupAll(self, outfile):
+        outnames = {}
         for listName in self.lists:
-            if len(self.lists) == 1:
-                out = open(outfile, "w")
-            else:
-                out = open(outfile + "." + listName, "w")
-            for entry in self.lists[listName].entries:
-                line = entry.text
-                for tag in entry.tags:
-                    line += " #(" + tag + ")"
-                for source in entry.source:
-                    line += " @(" + source + ")"
-                line += "\n"
-                out.write(line)
-            out.close()
-
+            outnames[listName] = self.backup(listName, outfile)
+        return outnames

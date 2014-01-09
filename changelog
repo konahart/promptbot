@@ -1,6 +1,18 @@
+8 January 2014
+- ircPromptBot.py -> promptbot.py
+- command parsing completely restructured - now has dictionary of commands
+- added "info," "tag counts," and "list length" commands
+- now also listens to "!" prefix the same as "promptbot, " (will be make configurable later
+- "start topic" and "stop topic" commands no longer give response to user (to be fixed) but presumably still work the same
+
+20 December 2013
+- last list logic moved from listbot to ircPromptBot
+- listbot -> listkeeper
+
 13 December 2013
 - start and stop looping topics in multiple channels
 - argparsing now allows for more setup before joining channels, init file
 - now handles ssl
 - new lists cannot be created with an existing list name nor name+s, e.g., cannot have "prompt" and "prompts" lists
 - automatically adds user adding prompt as a source for the prompt ("added by $USER")
+- selectTopic made separate for easier customization
