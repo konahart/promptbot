@@ -2,6 +2,7 @@
 from random import choice
 from collections import Counter
 import sys, re, json
+from promptFormatting import *
 
 class SetToListEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -179,17 +180,43 @@ class ListKeeper:
 
     def load(self, infile):
         loaded = {}
-        data = json.loads(open(infile, "r").read())
-        for listName in data:
-            self.addList(listName)
-            loaded[listName] = 0
-            for entry in data[listName]:
-                text = entry['text'] 
-                tags = set(entry['tags'])
-                source = entry['source']
-                newEntry = Entry(text, tags, source)
-                self.lists[listName].append(newEntry)
-                loaded[listName] += 1
+        entryFile = open(infile, "r")
+        try:
+            data = json.loads(entryFile.read())
+            for listName in data:
+                self.addList(listName)
+                loaded[listName] = 0
+                for entry in data[listName]:
+                    text = entry['text'] 
+                    tags = set(entry['tags'])
+                    source = entry['source']
+                    newEntry = Entry(text, tags, source)
+                    self.lists[listName].append(newEntry)
+                    loaded[listName] += 1
+        except ValueError:
+            listName = ""
+            data = entryFile.readlines()
+            length = len(data)
+            i = 0
+            while i < length and listName == "":
+                line = data[i]
+                if line.startswith("~"):
+                    listName = re.sub("^~", "", line)
+                    self.addList(listName)
+                i += 1
+            while i < length:
+                line = data[i]
+                if line.startswith("~"):
+                    listName = re.sub("^~", "", line)
+                    self.addList(listName)
+                else:
+                    line, tags = tagsFromText(line)
+                    line, source = sourceFromText(line)
+                    newEntry = Entry(line, tags, source)
+                    self.lists[listName].append(newEntry)
+                    loaded[listName] += 1
+                i += 1
+        entryFile.close()
         return loaded 
 
 #back up a specific list in listkeeper

@@ -1,3 +1,6 @@
+May 2014
+ - listkeeper now uses json for serialization
+
 8 January 2014
 - ircPromptBot.py -> promptbot.py
 - listkeeper responses more consistent, leaves messages to user on the promptbot side
