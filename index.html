@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Promptbot by konayashi</title>
+    <title>Promptbot</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -16,7 +16,7 @@
     <div class="wrapper">
       <header>
         <h1>Promptbot</h1>
-        <p>An irc bot that gives writing prompts on command</p>
+        <p>An irc bot for writers.</p>
 
         <p class="view"><a href="https://github.com/konayashi/promptbot">View the Project on GitHub <small>konayashi/promptbot</small></a></p>
 
@@ -28,37 +28,94 @@
         </ul>
       </header>
       <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
-
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
+<p>Someday, there will be some manner of introductory paragraph here. Today is not that day, however.</p>
+<p>Promptbot is currently active in <a href="https://kiwiirc.com/client/irc.snoonet.org/writingprompts">#WritingPrompts on SnooNet.</a></p>
 <h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<a name="commands" class="anchor" href="#commands"><span class="octicon octicon-link"></span></a>Commands</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h4>General commands</h4>
+<li><b>lists</b> &raquo; lists names of all lists currently in promptbot</li>
+<li><b>random</b> &raquo; random entry from any list in promptbot</li>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<h4>List commands</h4>
+<p>The following commands apply to any list. To specify the list, replace &lt;listname&gt; with the name of the list. Usually the list you'll want is "prompt." See example usage for further clarification.</p>
+<ul>
+<li><b>&lt;listname&gt;</b> &raquo; random entry from list</li>
+<li><b>&lt;listname&gt; &lt;keyword&gt; </b> &raquo; entry from list that has been tagged with &lt;keyword&gt;
+	<ul>
+	<li>Multiple keywords can be given, and it will return an entry tagged with at least one of the keywords.</li>
+	<li>If a match is found, the response will begin with the keyword. If no match is found, it will return a random entry from the list.</li>
+	</ul>
+</li>
+<li><b>&lt;listname&gt; &lt;#&gt;</b> &raquo; entry number # from list. Replace &lt;#&gt; with an actual number (integers only).</li>
+<li><b>last &lt;listname&gt;</b> &raquo; repeat most recently given entry from list</li>
+</ul>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<h4>List commands example: prompt list</h4>
+<ul>
+<li><b>To get a random entry from prompt list</b> &raquo; prompt</li>
+<li><b>To get a prompt about worldbuilding</b> &raquo; prompt worldbuilding 
+	<ul>
+	<li>Note: there may or may not actually be any prompts tagged with worldbuilding.</li>
+	</ul>
+</li>
+<li><b>To get prompt #10</b> &raquo; prompt 10</li>
+<li><b>To repeat the most recent prompt</b> &raquo; last prompt</li>
+</ul>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<h4>Entry commands</h4>
+<ul>
+<li><b>add &lt;listname&gt;</b> &raquo; add new entry to list
+	<ul>
+	<li>Syntax: entry text #tag #(tag with spaces) @(source)</li>
+	</ul>
+</li>
+<li><b>index?</b> &raquo; number of the most recently given entry</li>
+<li><b>tags?</b> &raquo; tags of the most recently given entry</li>
+<li><b>source?</b> &raquo; source of the most recently given entry</li>
+<li><b>add tag &lt;keyword&gt;</b> &raquo; add a tag to the most recently given entry</li>
+<li><b>add source @(&lt;source text&gt;)</b> &raquo; add a source to the most recently given entry</li>
+<li><b>remove tag &lt;keyword&gt;</b> &raquo; remove a tag from the most recently given entry</li>
+<li><b>remove source @(&lt;source text&gt;)</b> &raquo; remove a source from the most recently given entry</li>
+</ul>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<h4>Sprint commands</h4>
+<ul>
+<li><b>sprint &lt;delay #&gt; &lt;duration #&gt;</b> &raquo; start a &lt;duration #&gt; minute-long wordsprint in &lt;delay #&gt; minutes
+	<ul>
+	<li>Promptbot will give 1-minute warnings before the start and end of the sprint.</li>
+	<li>Winners are announced 1 &gt; &lt;duration #&gt;/5 &lt; 10 minutes after the sprint ends.
+	</ul>
+</li>
+<li><b>join &lt;#&gt;</b> &raquo; join a wordsprint with a starting count of &lt;#&gt; words
+	<ul>
+	<li>You don't need to use join to join a wordsprint, but otherwise promptbot will assume your starting wordcount is 0.</li>
+	<li>This command can be used at any time during the sprint to change your starting wordcount.</li>
+	</ul>
+</li>
+<li><b>wordcount &lt;#&gt;</b> &raquo; update your wordcount to &lt;#&gt;
+	<ul>
+	<li><b>wc &lt;#&gt;</b> performs the same command.</li>
+	<li>Before the sprint begins, this will set your starting count. Once the sprint starts, it will set your current wordcount.</li>
+	<li>Promptbot will tell you the number of words you've written since your last update, and the total words written so far in the sprint.</li>
+	</ul>
+</li>
+<li><b>wordcount</b> &raquo; check the total number of words you have written so far for the current sprint</li>
+	<ul>
+	<li><b>wc</b> performs the same command.</li>
+	</ul>
+</li>
+<li><b>wordcount &lt;username&gt;</b> &raquo; check &lt;username&gt;'s wordcount for the current sprint</li>
+<li><b>cancel</b> &raquo; cancel a wordsprint
+	<ul>
+	<li>Only channel ops and the person who started the sprint can cancel it.</li>
+	</ul>
+</li>
+</ul>
+
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/konayashi">konayashi</a></p>
