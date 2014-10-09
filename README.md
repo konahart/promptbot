@@ -1,3 +1,5 @@
+Please note that the code in this repository is quite a bit out of date. Stayed tuned for a new release, coming soon. Information at http://konayashi.github.io/promptbot/ is up to date. 
+
 <b>promptbot</b>
 =========
 
