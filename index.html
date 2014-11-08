@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Promptbot</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Promptbot</h1>
+        <p>An irc bot for writers.</p>
+	<p><a href="#introduction">Introduction</a></p>
+	<p><a href="#commands">Commands</a><br />
+        <small><strong>
+        &raquo; <a href="#generalcommands">General</a><br />
+        &raquo; <a href="#listcommands">List</a><br />
+        &raquo; <a href="#entrycommands">Entry</a><br />
+        &raquo; <a href="#sprintcommands">Sprint</a><br />
+        &raquo; <a href="#misccommands">Miscellaneous</a><br />
+        </small></strong></p>
+	<p><a href="https://github.com/konayashi/promptbot/issues">Submit a bug or feature request</a></p>
+	<p><a href="https://docs.google.com/forms/d/11lLuaGaFRHRV-1bQyaHbfWzRqT3fbjX_YRyyzMf4Kdk/viewform?usp=send_form">Request change to promptbot content</a></p>
+
+        <p class="view"><a href="https://github.com/konayashi/promptbot">View the project on GitHub <small>konayashi/promptbot</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/konayashi/promptbot/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/konayashi/promptbot/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/konayashi/promptbot">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+<h3>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
+
+<p>Someday, there will be some manner of introductory paragraph here. Today is not that day, however.</p>
+<p>Promptbot is currently active in <a href="https://kiwiirc.com/client/irc.snoonet.org/writingprompts">#WritingPrompts on SnooNet.</a></p>
+<h3>
+<a name="commands" class="anchor" href="#commands"><span class="octicon octicon-link"></span></a>Commands</h3>
+<p>To give Promptbot a command, type either "promptbot, &lt;command&gt;" or "!&lt;command&gt;"</p>
+
+<a name="generalcommands" class="anchor" href="#generalcommands"><span class="octicon octicon-link"></span></a>
+<h4>General commands</h4>
+<li><b>lists</b> &raquo; lists names of all lists currently in promptbot</li>
+<li><b>random</b> &raquo; random entry from any list in promptbot</li>
+
+<a name="listcommands" class="anchor" href="#listcommands"><span class="octicon octicon-link"></span></a>
+<h4>List commands</h4>
+<p>The following commands apply to any list. To specify the list, replace &lt;listname&gt; with the name of the list. Usually the list you'll want is "prompt." See example usage for further clarification.</p>
+<ul>
+<li><b>&lt;listname&gt;</b> &raquo; random entry from list</li>
+<li><b>&lt;listname&gt; &lt;keyword&gt; </b> &raquo; entry from list that has been tagged with &lt;keyword&gt;
+	<ul>
+	<li>Multiple keywords can be given, and it will return an entry tagged with at least one of the keywords.</li>
+	<li>If a match is found, the response will begin with the keyword. If no match is found, it will return a random entry from the list.</li>
+	</ul>
+</li>
+<li><b>&lt;listname&gt; &lt;#&gt;</b> &raquo; entry number # from list. Replace &lt;#&gt; with an actual number (integers only).</li>
+<li><b>last &lt;listname&gt;</b> &raquo; repeat most recently given entry from list</li>
+</ul>
+
+<h4>List commands example: prompt list</h4>
+<ul>
+<li><b>To get a random entry from prompt list</b> &raquo; prompt</li>
+<li><b>To get a prompt about worldbuilding</b> &raquo; prompt worldbuilding 
+	<ul>
+	<li>Note: there may or may not actually be any prompts tagged with worldbuilding.</li>
+	</ul>
+</li>
+<li><b>To get prompt #10</b> &raquo; prompt 10</li>
+<li><b>To repeat the most recent prompt</b> &raquo; last prompt</li>
+</ul>
+
+<a name="entrycommands" class="anchor" href="#entrycommands"><span class="octicon octicon-link"></span></a>
+<h4>Entry commands</h4>
+<ul>
+<li><b>add &lt;listname&gt;</b> &raquo; add new entry to list
+	<ul>
+	<li>Syntax: entry text #tag #(tag with spaces) @(source)</li>
+	</ul>
+</li>
+<li><b>index?</b> &raquo; number of the most recently given entry</li>
+<li><b>tags?</b> &raquo; tags of the most recently given entry</li>
+<li><b>source?</b> &raquo; source of the most recently given entry</li>
+<li><b>add tag &lt;keyword&gt;</b> &raquo; add a tag to the most recently given entry</li>
+<li><b>add source @(&lt;source text&gt;)</b> &raquo; add a source to the most recently given entry</li>
+<li><b>remove tag &lt;keyword&gt;</b> &raquo; remove a tag from the most recently given entry</li>
+<li><b>remove source @(&lt;source text&gt;)</b> &raquo; remove a source from the most recently given entry</li>
+</ul>
+
+<h4>Entry commands example: prompt </h4>
+<ul>
+<li><b>To add a prompt with text "Describe the entirety of a single characters life. 20 word limit." tagged "Flash Fiction" and "FF," and sourced to <a href="http://www.reddit.com/user/RyanKinder">RyanKinder</a> and <a href="www.amzn.com/B00JOVSYC2">www.amzn.com/B00JOVSYC2</a></b> &raquo; add prompt Describe the entirety of a single characters life. 20 word limit. #(Flash Fiction) #FF @(RyanKinder) @(www.amzn.com/B00JOVSYC2)</li>
+</ul>
+
+<a name="sprintcommands" class="anchor" href="#sprintcommands"><span class="octicon octicon-link"></span></a>
+<h4>Sprint commands</h4>
+<p>Sprints are informal competitions against other writers in the chatroom to write as much as you can within a certain period of time. Typically, sprints last 15 to 30 minutes. You are not required to share whatever you write during the sprint, though you are free to do so! Word counts are self-reported, but since there are no prizes for wordsprints, lying or making up ridiculous numbers would really only be cheating yourself (and annoying others).</p>
+<ul>
+<li><b>sprint &lt;delay #&gt; &lt;duration #&gt;</b> &raquo; start a &lt;duration #&gt; minute-long wordsprint in &lt;delay #&gt; minutes
+	<ul>
+	<li>Promptbot will give 1-minute warnings before the start and end of the sprint.</li>
+	<li>Winners are announced 1 &gt; &lt;duration #&gt;/5 &lt; 10 minutes after the sprint ends.
+	</ul>
+</li>
+<li><b>join &lt;#&gt;</b> &raquo; join a wordsprint with a starting count of &lt;#&gt; words
+	<ul>
+	<li>You don't need to use join to join a wordsprint, but otherwise promptbot will assume your starting wordcount is 0.</li>
+	<li>This command can be used at any time during the sprint to change your starting wordcount.</li>
+	</ul>
+</li>
+<li><b>wordcount &lt;#&gt;</b> &raquo; update your wordcount to &lt;#&gt;
+	<ul>
+	<li><b>wc &lt;#&gt;</b> performs the same command.</li>
+	<li>Before the sprint begins, this will set your starting count. Once the sprint starts, it will set your current wordcount.</li>
+	<li>Promptbot will tell you the number of words you've written since your last update, and the total words written so far in the sprint.</li>
+	</ul>
+</li>
+<li><b>wordcount</b> &raquo; check the total number of words you have written so far for the current sprint</li>
+	<ul>
+	<li><b>wc</b> performs the same command.</li>
+	</ul>
+</li>
+<li><b>wordcount &lt;username&gt;</b> &raquo; check &lt;username&gt;'s wordcount for the current sprint</li>
+<li><b>cancel</b> &raquo; cancel a wordsprint
+	<ul>
+	<li>Only channel ops and the person who started the sprint can cancel it.</li>
+	</ul>
+</li>
+</ul>
+
+<a name="misccommands" class="anchor" href="#misccommands"><span class="octicon octicon-link"></span></a>
+<h4>Miscellaneous</h4>
+<ul>
+<li><b>smite &lt;user&gt;</b> &raquo; this command does not exist, and probably never will if socialdisorder keeps bugging me about it ;)</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/konayashi">konayashi</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
