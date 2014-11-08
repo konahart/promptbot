@@ -1,165 +1,81 @@
-Please note that the code in this repository is quite a bit out of date. Stayed tuned for a new release, coming soon. Information at http://konayashi.github.io/promptbot/ is up to date. 
+Please note that the code in this repository is quite a bit out of date. Stayed tuned for a new release, coming soon.
 
-<b>promptbot</b>
+##Promptbot
 =========
 
-An irc bot that gives writing prompts on command.
+An irc bot for writers.
 
-<b>Example Usage:</b> <br>
-./promptbot -s irc.freenode.net -c #ohhi -l prompt -l praise -l advice<br>
+###Introduction
 
-cat myinits.pb<br>
-	-s irc.freenode.net -c #ohhi -l prompt -l praise -l advice
-./promptbot myinits.pb
+Someday, there will be some manner of introductory paragraph here. Today is not that day, however.
 
-The options below can be specified in a file or on the command line. promptbot.py will look for init.pb by default if no options are provided on the command line.
-<br>
+Promptbot is currently active in [#WritingPrompts on SnooNet](https://kiwiirc.com/client/irc.snoonet.org/writingprompts).
 
-Usage: promptbot.py [-h] [-s SERVER] [-p PORT] [--ssl]
-                       [-c CHANNELS [CHANNELS ...]] [-n NICK]
-                       [--pass PASSWORD] [-l LIST [LIST ...]] [-o OUTPUT]
+###Commands
 
-  -h, --help            show this help message and exit<br>
-  -s SERVER, --server SERVER
-                        server to connect to <br>
-  -p PORT, --port PORT  port to connect to <br>
-  --ssl <br>
-  -c CHANNELS [CHANNELS ...], --channel CHANNELS [CHANNELS ...]
-                        channel(s) to join <br>
-  -n NICK, --nick NICK, --nickname NICK
-                        nick of bot <br>
-  --pass PASSWORD, --password PASSWORD
-  -l LIST [LIST ...], --list LIST [LIST ...]
-                        listname [input files] <br>
-  -o OUTPUT, --output OUTPUT
-                        output file name <br>
-<br>
+To give Promptbot a command, type either "promptbot, <command>" or "!<command>"
 
-<b>Example Usage:</b>
+####General commands
 
-	Kona: prompt
-	promptbot: Kona: A famous religious leader enters the afterlife. It turns out their religion wasn't the right one.
-	Kona: tags?
-	promptbot: religion; death
-	Kona: source?
-	promptbot: reddit; r/WritingPrompts; http://redd.it/1pqtc1
-	Kona: index?
-	promptbot: Prompt #735
-	Kona: advice
-	promptbot: Kona: Enter contests. Submit to periodicals. Get yourself out there. Cultivate an identity.
-	Kona: source?
-	promptbot: http://prompts-and-pointers.tumblr.com/post/44554951694; http://prompts-and-pointers.tumblr.com
-	Kona: index?
-	promptbot: Advice #89
-	Kona: last
-	promptbot: Enter contests. Submit to periodicals. Get yourself out there. Cultivate an identity.
-	Kona: last prompt
-	promptbot: A famous religious leader enters the afterlife. It turns out their religion wasn't the right one.
-	Kona: add list task
-	promptbot: New task list added.
-	Kona: task tags
-	promptbot: Task has no tags.
-	Kona: add task Get a beer. #beer
-	promptbot: Task added.
-	Kona: task tags
-	promptbot: beer
-	Kona: tags
-	promptbot: advice: quote, advice, challenge, sci-fi, description
-	promptbot: task: beer
-	promptbot: prompt: worldbuilding, dialogue, death, plot, character, horror, Get Inside Your Character's Head,
-	           religion, theme, anthropomorphization
-	promptbot: praise:
+* **lists** &raquo; lists names of all lists currently in promptbot
+* **random** &raquo; random entry from any list in promptbot
 
-<br>
+####List commands
 
-<b>Common Commands:</b>
+The following commands apply to any list. To specify the list, replace <listname> with the name of the list. Usually the list you'll want is "prompt." See example usage for further clarification.
 
-	list
-gives a random entry from list
+* **<listname>** &raquo; random entry from list
+* **<listname> <keyword>** &raquo; entry from list that has been tagged with <keyword>
+  * Multiple keywords can be given, and it will return an entry tagged with at least one of the keywords.
+  * If a match is found, the response will begin with the keyword. If no match is found, it will return a random entry from the list.
+* **<listname> <#>** &raquo; entry number # from list. Replace <#> with an actual number (integers only).
+* **last <listname>** &raquo; repeat most recently given entry from list
 
-	tag
-gives an entry from the default list (prompt) with that tag
+####List commands example: prompt list
 
-	000
-gives the entry from the default list (prompt) with that index (000 being any integer)
-	
-	list tag
-gives an entry that has that tag
-	
-	list tag1 ... tagn
-gives an entry with one of the given tags
-	
-	list 000
-gives the list entry with that index (000 being any integer)
-	
-	add list text #tag #(tag with spaces) @source @(source with space)
-adds prompt to list of prompts (tags and sources being optional)
-	
-	last
-repeats the last entry given (from whatever list was last accessed)
-	
-	last list
-repeats last entry given from specific list
-	
-	tags?
-lists the tags from the last entry given
-	
-	source?
-lists the source from the last entry given
-	
-	index?
-gives the index of the last entry given
-	
-	add tag	#tag #(tag with spaces)
-adds given tags to the last entry given
-	
-	add source @source @(source with space)
-adds sources to the last entry given
-	
-	remove tag #tag1 ... #tagn
-removes these tags from the last entry given
-	
-	remove source @source @(source with space)
-removes these sources from the last entry given
-	
-	tags
-lists all tags in all lists
-	
-	list tags
-lists all tags for that list
-	
-	add list
-add a new list. The above commands can then be used on new list.
-	
-	topic
-tries to set the topic
-	
-	start topic
-will try to set the topic every night at midnight
-	
-	stop topic
-(not yet implemented) will stop trying to set the topic every night at midnight
-	
-	help
-shows interactive help menu
-	
-	github
-links to https://github.com/konayashi/promptbot
-	
-<br>	
+* **To get a random entry from prompt list** &raquo; prompt
+* **To get a prompt about worldbuilding** &raquo; prompt worldbuilding
+  * Note: there may or may not actually be any prompts tagged with worldbuilding.
+* **To get prompt #10** &raquo; prompt 10
+* **To repeat the most recent prompt** &raquo; last prompt
 
+####Entry commands
 
-<b>More Commands:</b>
+* **add <listname>** &raquo; add new entry to list
+  * Syntax: entry text #tag #(tag with spaces) @(source)
+* **index?** &raquo; number of the most recently given entry
+* **tags?** &raquo; tags of the most recently given entry
+* **source?** &raquo; source of the most recently given entry
+* **add tag <keyword>** &raquo; add a tag to the most recently given entry
+* **add source @(<source text>)** &raquo; add a source to the most recently given entry
+* **remove tag <keyword>** &raquo; remove a tag from the most recently given entry
+* **remove source @(<source text>)** &raquo; remove a source from the most recently given entry
 
-	load list file
+####Entry commands example: prompt
 
-loads a local file of entries into a list. See prompts/ for example format.
+* **To add a prompt with text "Describe the entirety of a single characters life. 20 word limit." tagged "Flash Fiction" and "FF," and sourced to RyanKinder and www.amzn.com/B00JOVSYC2** &raquo; add prompt Describe the entirety of a single characters life. 20 word limit. #(Flash Fiction) #FF @(RyanKinder) @(www.amzn.com/B00JOVSYC2)
 
-	backup list
+####Sprint commands
 
-backs up list to output file (if given) or inputfile.pb
+Sprints are informal competitions against other writers in the chatroom to write as much as you can within a certain period of time. Typically, sprints last 15 to 30 minutes. You are not required to share whatever you write during the sprint, though you are free to do so! Word counts are self-reported, but since there are no prizes for wordsprints, lying or making up ridiculous numbers would really only be cheating yourself (and annoying others).
 
-backup
+* **sprint <delay #> <duration #>** &raquo; start a <duration #> minute-long wordsprint in <delay #> minutes
+  * Promptbot will give 1-minute warnings before the start and end of the sprint.
+  * Winners are announced 1 > <duration #>/5 < 10 minutes after the sprint ends.
+* **join <#>** &raquo; join a wordsprint with a starting count of <#> words
+  * You don't need to use join to join a wordsprint, but otherwise promptbot will assume your starting wordcount is 0.
+  * This command can be used at any time during the sprint to change your starting wordcount.
+* **wordcount <#>** &raquo; update your wordcount to <#>
+  * **wc <#>** performs the same command.
+  * Before the sprint begins, this will set your starting count. Once the sprint starts, it will set your current wordcount.
+  * Promptbot will tell you the number of words you've written since your last update, and the total words written so far in the sprint.
+* **wordcount** 	 &raquo; check the total number of words you have written so far for the current sprint
+  * **wc** performs the same command.
+* **wordcount <username>** &raquo; check <username>'s wordcount for the current sprint
+  * **wc <username>** performs the same command.
+* **cancel** &raquo; cancel a wordsprint
+  * Only channel ops and the person who started the sprint can cancel it.
 
-	backs up all lists to outputfile.list (if given) or inputfile.pb.list
+####Miscellaneous
 
+* **smite <user>** &raquo; this command does not exist, and probably never will if socialdisorder keeps bugging me about it ;)
