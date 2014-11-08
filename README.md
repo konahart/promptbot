@@ -1,7 +1,6 @@
 Please note that the code in this repository is quite a bit out of date. Stayed tuned for a new release, coming soon.
 
 ##Promptbot
-=========
 
 An irc bot for writers.
 
