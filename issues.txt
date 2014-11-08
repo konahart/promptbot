@@ -1,7 +1,0 @@
--Change serialization
--Unicode
--add 'remove list' command
-- start/stop topic confirmation
-
-Ideas:
--$CHARACTER/Mad Lib modes
