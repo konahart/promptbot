@@ -1,13 +1,23 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
+/* styles.css */
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro);
+@import url(http://fonts.googleapis.com/css?family=Great+Vibes);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu);
 
 body {
   padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
   color:#777;
   font-weight:300;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1 {
+  color: #59B34C;
+  font-family: 'Great Vibes', cursive;
+  font-size: 5em;
+  font-weight: normal;
+}
+
+h2, h3, h4, h5, h6 {
   color:#222;
   margin:0 0 20px;
 }
@@ -16,12 +26,8 @@ p, ul, ol, table, pre, dl {
   margin:0 0 20px;
 }
 
-h1, h2, h3 {
+h2, h3 {
   line-height:1.1;
-}
-
-h1 {
-  font-size:28px;
 }
 
 h2 {

@@ -1,0 +1,100 @@
+/* style.css */
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro);
+@import url(http://fonts.googleapis.com/css?family=Great+Vibes);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu);
+
+body {
+  padding:50px;
+  font-family: 'Source Sans Pro', sans-serif;
+  color:#777;
+  font-weight:300;
+}
+
+h2, h3 {
+        font-family: 'Ubuntu', sans-serif;
+	margin:0 0 20px;
+}
+
+h1 {
+            text-align: center;
+            color: #59B34C;
+            font-family: 'Great Vibes', cursive;
+            font-size: 5em;
+}
+
+h1:first-child + p {
+        text-align: center;
+}
+
+h1 > a {
+        color: inherit;
+}
+
+h3 {
+        color: #59B34C;
+}
+
+a {
+        color: #59B34C;
+}
+
+hr {
+        border: 0;
+            height: 0;
+                border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.container {
+        max-width: 700px;
+            margin: 0 auto;
+                text-align: left;
+}
+
+p {
+        font-size: 1em;
+            line-height: 1.25em;
+                margin: 1.25em 0;
+                    text-align: left;
+                        padding-left: 10px;
+                            padding-right: 10px;
+}
+
+a, a:visited, a:hover {
+        text-decoration: none;
+}
+
+.footer p {
+        clear: both;
+            margin: 3px;
+                text-align: center;
+}
+
+.posts {
+    width: 290px;
+    overflow-wrap: break-word;
+}
+
+
+#blog-posts, #current-projects, #about {
+    width: 50%;
+        margin-left: 20px;
+}
+
+#blog-posts, .posts {
+    float: left;
+}
+
+#current-projects, #current-projects + p, #about {
+    float: left;
+        border-top: 1px solid rgba(0,0,0,0.1);
+            margin-top: 5px;
+                padding-top: 15px;
+}
+
+#current-projects + p {
+    padding-left: 20px;
+}
+
+hr {
+        clear: both;
+}
